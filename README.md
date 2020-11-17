@@ -13,4 +13,4 @@ The areas that are greyed out are those which are either constant or are depende
 If you're just looking to create a WAV file, *please, please don't use this*! This isn't an audio editor. This tool is intended for learning about the WAV format and messing around with WAV files at the most basic level. If that sounds like fun, feel free to head over to the [Releases page](https://github.com/w-henderson/WAVFileCreator/releases) and grab the latest version. It's likely to be buggy as my knowledge of C# is still very limited, so please open an issue with any bugs you find!
 
 # Screenshot
-![Screenshot](assets/screenshot.png)
+![Screenshot](assets/screenshot.PNG)
