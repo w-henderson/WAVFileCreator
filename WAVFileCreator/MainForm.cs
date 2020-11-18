@@ -14,7 +14,9 @@ namespace WAVFileCreator
     public partial class MainForm : Form
     {
         SettingsForm settingsForm;
+        WavlangParser parser = new WavlangParser();
         public static bool advancedMode = false;
+        public static bool useWavlang = true;
 
         public MainForm()
         {
@@ -23,8 +25,31 @@ namespace WAVFileCreator
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            string text = riffChunkIDInput.Text + riffChunkSizeInput.Text + riffFormatInput.Text + fmtChunkIDInput.Text + fmtChunkSizeInput.Text + audioFormatInput.Text + channelsInput.Text + sampleRateInput.Text + byteRateInput.Text + blockAlignInput.Text + bitsInput.Text + dataChunkIDInput.Text + dataChunkSizeInput.Text + inp.Text.Replace(" ", "");
-            byte[] bytes = StringToByteArray(text);
+            string inpText = inp.Text.Replace(" ", "");
+            if (useWavlang)
+            {
+                try
+                {
+                    inpText = parser.ParseWavlang(inpText);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Cannot save file because of Wavlang syntax error:\n" + ex.Message);
+                    return;
+                }
+            }
+
+            string text = riffChunkIDInput.Text + riffChunkSizeInput.Text + riffFormatInput.Text + fmtChunkIDInput.Text + fmtChunkSizeInput.Text + audioFormatInput.Text + channelsInput.Text + sampleRateInput.Text + byteRateInput.Text + blockAlignInput.Text + bitsInput.Text + dataChunkIDInput.Text + dataChunkSizeInput.Text + inpText;
+
+            byte[] bytes;
+            try
+            {
+                bytes = StringToByteArray(text);
+            } catch
+            {
+                MessageBox.Show("Error reading hex! If you're using Wavlang, make sure it's enabled in the settings. Otherwise, ensure that only characters 0-f are included and that you have an even number of characters so as to not cut off a byte.");
+                return;
+            }
 
             // Do the actual writing
             Stream stream;
@@ -50,10 +75,26 @@ namespace WAVFileCreator
         {
             if (!advancedMode)
             {
+                string inputText = inp.Text.Replace(" ", "");
+                if (useWavlang)
+                {
+                    try
+                    {
+                        inputText = parser.ParseWavlang(inputText);
+                    }
+                    catch (Exception)
+                    {
+                        lengthLabel.Text = "Length: ?";
+                        fileSizeLabel.Text = "File Size: ?    A Wavlang syntax error has occurred.";
+                        riffChunkSizeInput.Text = "?";
+                        dataChunkSizeInput.Text = "?";
+                        blockAlignInput.Text = "?";
+                        byteRateInput.Text = "?";
+                        return;
+                    }
+                }
                 try
                 {
-                    string inputText = inp.Text.Replace(" ", "");
-
                     int dataSubchunkSize = inputText.Length / 2;
                     int fullChunkSize = dataSubchunkSize + 36;
 
@@ -83,16 +124,48 @@ namespace WAVFileCreator
 
         private void estimateStuff()
         {
-            string outputText = riffChunkIDInput.Text + riffChunkSizeInput.Text + riffFormatInput.Text + fmtChunkIDInput.Text + fmtChunkSizeInput.Text + audioFormatInput.Text + channelsInput.Text + sampleRateInput.Text + byteRateInput.Text + blockAlignInput.Text + bitsInput.Text + dataChunkIDInput.Text + dataChunkSizeInput.Text + inp.Text.Replace(" ", "");
+            string inpText = inp.Text.Replace(" ", "");
+            if (useWavlang)
+            {
+                try
+                {
+                    inpText = parser.ParseWavlang(inpText);
+                } catch (Exception)
+                {
+                    lengthLabel.Text = "Length: ?";
+                    fileSizeLabel.Text = "File Size: ?    A Wavlang syntax error has occurred.";
+                    return;
+                }
+            }
+
+            string outputText = riffChunkIDInput.Text + riffChunkSizeInput.Text + riffFormatInput.Text + fmtChunkIDInput.Text + fmtChunkSizeInput.Text + audioFormatInput.Text + channelsInput.Text + sampleRateInput.Text + byteRateInput.Text + blockAlignInput.Text + bitsInput.Text + dataChunkIDInput.Text + dataChunkSizeInput.Text + inpText;
             int estFileSize = outputText.Length / 2;
 
             string byteRateStr = ReverseEndianness(byteRateInput.Text);
             int byteRate = int.Parse(byteRateStr, System.Globalization.NumberStyles.HexNumber);
-            int dataLength = inp.Text.Replace(" ", "").Length / 2;
+            int dataLength = inpText.Length / 2;
             float estLength = (float)dataLength / (float)byteRate;
 
             lengthLabel.Text = String.Format("Length: {0:0.##}s", estLength);
             fileSizeLabel.Text = "File Size: " + estFileSize.ToString() + " bytes";
+        }
+
+        private void parseWavlang(object sender, EventArgs e)
+        {
+            string inpText = inp.Text;
+            if (useWavlang)
+            {
+                try
+                {
+                    inpText = parser.ParseWavlang(inpText);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                    return;
+                }
+            }
+            inp.Text = inpText;
         }
 
         public void updateAbility(bool isChecked)
@@ -108,6 +181,16 @@ namespace WAVFileCreator
 
             dataChunkIDInput.Enabled = isChecked;
             dataChunkSizeInput.Enabled = isChecked;
+        }
+
+        public void updateWavlangButton(bool isChecked)
+        {
+            wavlangButton.Enabled = isChecked;
+        }
+
+        public int getSampleRate()
+        {
+            return int.Parse(ReverseEndianness(sampleRateInput.Text), System.Globalization.NumberStyles.HexNumber);
         }
 
         public static byte[] StringToByteArray(string hex)

@@ -16,12 +16,15 @@ namespace WAVFileCreator
         {
             InitializeComponent();
             constantChange.Checked = MainForm.advancedMode;
+            wavlangEnabledCheck.Checked = MainForm.useWavlang;
         }
 
         private void saveSettingsButton_Click(object sender, EventArgs e)
         {
             MainForm.advancedMode = constantChange.Checked;
+            MainForm.useWavlang = wavlangEnabledCheck.Checked;
             Program.form.updateAbility(constantChange.Checked);
+            Program.form.updateWavlangButton(wavlangEnabledCheck.Checked);
             Close();
         }
     }
