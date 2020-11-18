@@ -41,10 +41,9 @@ namespace WAVFileCreator
                     BinaryWriter writer = new BinaryWriter(stream);
                     writer.Write(bytes);
                     stream.Close();
+                    MessageBox.Show("File successfully saved.");
                 }
             }
-
-            MessageBox.Show("File successfully saved.");
         }
 
         private void updateSizes(object sender, EventArgs e)
