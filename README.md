@@ -9,6 +9,8 @@ All the sections you see in the GUI are joined together in order to make up the 
 ## Why is so much greyed out?
 The areas that are greyed out are those which are either constant or are dependent on the editable areas. For example, the "Format" parameter in the RIFF header always contains the text "WAVE" in ASCII, so you can't change it. As another example, the chunk size parameter of the data subchunk just contains the length in bytes of the large data section, so allowing that to be changed would be pointless. You'll see as you change some values that lots of the greyed out values will change - this is because the program is automatically calculating the appropriate valid values.
 
+If you want to edit them anyway, you can change the settings to allow it, but this is likely to produce a corrupted file.
+
 ## What's the point when I could just use Audacity or another audio editor?
 If you're just looking to create a WAV file, *please, please don't use this*! This isn't an audio editor. This tool is intended for learning about the WAV format and messing around with WAV files at the most basic level. If that sounds like fun, feel free to head over to the [Releases page](https://github.com/w-henderson/WAVFileCreator/releases) and grab the latest version. It's likely to be buggy as my knowledge of C# is still very limited, so please open an issue with any bugs you find!
 

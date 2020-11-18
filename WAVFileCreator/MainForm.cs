@@ -11,9 +11,12 @@ using System.Windows.Forms;
 
 namespace WAVFileCreator
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
-        public Form1()
+        SettingsForm settingsForm;
+        public static bool advancedMode = false;
+
+        public MainForm()
         {
             InitializeComponent();
         }
@@ -46,35 +49,37 @@ namespace WAVFileCreator
 
         private void updateSizes(object sender, EventArgs e)
         {
-            try
+            if (!advancedMode)
             {
-                string inputText = inp.Text.Replace(" ", "");
+                try
+                {
+                    string inputText = inp.Text.Replace(" ", "");
 
-                int dataSubchunkSize = inputText.Length / 2;
-                int fullChunkSize = dataSubchunkSize + 36;
+                    int dataSubchunkSize = inputText.Length / 2;
+                    int fullChunkSize = dataSubchunkSize + 36;
 
-                string channels = channelsInput.Text;
-                string bits = bitsInput.Text;
-                string sampleRate = sampleRateInput.Text;
+                    string channels = channelsInput.Text;
+                    string bits = bitsInput.Text;
+                    string sampleRate = sampleRateInput.Text;
 
-                string channelsBigEndian = ReverseEndianness(channels);
-                string bitsBigEndian = ReverseEndianness(bits);
-                string sampleRateBigEndian = ReverseEndianness(sampleRate);
+                    string channelsBigEndian = ReverseEndianness(channels);
+                    string bitsBigEndian = ReverseEndianness(bits);
+                    string sampleRateBigEndian = ReverseEndianness(sampleRate);
 
-                int blockAlign = int.Parse(channelsBigEndian, System.Globalization.NumberStyles.HexNumber) * (int.Parse(bitsBigEndian, System.Globalization.NumberStyles.HexNumber) / 8);
-                int byteRate = blockAlign * int.Parse(sampleRateBigEndian, System.Globalization.NumberStyles.HexNumber);
+                    int blockAlign = int.Parse(channelsBigEndian, System.Globalization.NumberStyles.HexNumber) * (int.Parse(bitsBigEndian, System.Globalization.NumberStyles.HexNumber) / 8);
+                    int byteRate = blockAlign * int.Parse(sampleRateBigEndian, System.Globalization.NumberStyles.HexNumber);
 
-                riffChunkSizeInput.Text = ReverseEndianness(fullChunkSize.ToString("X8"));
-                dataChunkSizeInput.Text = ReverseEndianness(dataSubchunkSize.ToString("X8"));
-                blockAlignInput.Text = ReverseEndianness(blockAlign.ToString("X4"));
-                byteRateInput.Text = ReverseEndianness(byteRate.ToString("X8"));
-
-                estimateStuff();
+                    riffChunkSizeInput.Text = ReverseEndianness(fullChunkSize.ToString("X8"));
+                    dataChunkSizeInput.Text = ReverseEndianness(dataSubchunkSize.ToString("X8"));
+                    blockAlignInput.Text = ReverseEndianness(blockAlign.ToString("X4"));
+                    byteRateInput.Text = ReverseEndianness(byteRate.ToString("X8"));
+                }
+                catch
+                {
+                    MessageBox.Show("oof occured");
+                }
             }
-            catch
-            {
-                MessageBox.Show("oof occured");
-            }
+            estimateStuff();
         }
 
         private void estimateStuff()
@@ -89,6 +94,21 @@ namespace WAVFileCreator
 
             lengthLabel.Text = String.Format("Length: {0:0.##}s", estLength);
             fileSizeLabel.Text = "File Size: " + estFileSize.ToString() + " bytes";
+        }
+
+        public void updateAbility(bool isChecked)
+        {
+            riffChunkIDInput.Enabled = isChecked;
+            riffChunkSizeInput.Enabled = isChecked;
+            riffFormatInput.Enabled = isChecked;
+
+            fmtChunkIDInput.Enabled = isChecked;
+            fmtChunkSizeInput.Enabled = isChecked;
+            byteRateInput.Enabled = isChecked;
+            blockAlignInput.Enabled = isChecked;
+
+            dataChunkIDInput.Enabled = isChecked;
+            dataChunkSizeInput.Enabled = isChecked;
         }
 
         public static byte[] StringToByteArray(string hex)
@@ -114,6 +134,16 @@ namespace WAVFileCreator
             List<string> bytes = num.SplitInParts(2).ToList();
             bytes.Reverse();
             return String.Join("", bytes);
+        }
+
+        private void settingsButton_Click(object sender, EventArgs e)
+        {
+            if (settingsForm != null)
+            {
+                settingsForm.Close();
+            }
+            settingsForm = new SettingsForm();
+            settingsForm.Show();
         }
     }
 
