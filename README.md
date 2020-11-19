@@ -6,7 +6,10 @@ WAVFileCreator is a very basic tool to assist in the creation of WAV files from 
 ## How do I use it?
 All the sections you see in the GUI are joined together in order to make up the final WAV file. Every value is in hexadecimal, but some are big endian and some are little endian due to the nature of WAV files. The large data area at the bottom is where the actual audio data goes, and the smaller sections at the top are for the header data. 
 
-I learned how WAV files work from [this excellent website](http://soundfile.sapp.org/doc/WaveFormat/), and I've written up what I've learned in [a couple of Markdown files](docs/index.md) in the `docs/` folder - have a read if you want to learn.
+I learned how WAV files work from [this excellent website](http://soundfile.sapp.org/doc/WaveFormat/), and I've written up what I've learned in [a couple of Markdown files](docs/wav.md) in the `docs/` folder - have a read if you want to learn.
+
+## What is Wavlang?
+First and foremost, a bad name! It's a very basic set of macros to make it easier to create WAV files. If Wavlang is enabled in the settings, you can use Wavlang macros, which are described in the [Wavlang documentation](docs/wavlang.md).
 
 ## Why is so much greyed out?
 The areas that are greyed out are those which are either constant or are dependent on the editable areas. For example, the "Format" parameter in the RIFF header always contains the text "WAVE" in ASCII, so you can't change it. As another example, the chunk size parameter of the data subchunk just contains the length in bytes of the large data section, so allowing that to be changed would be pointless. You'll see as you change some values that lots of the greyed out values will change - this is because the program is automatically calculating the appropriate valid values.

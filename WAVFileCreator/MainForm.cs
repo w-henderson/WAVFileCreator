@@ -116,7 +116,13 @@ namespace WAVFileCreator
                 }
                 catch
                 {
-                    MessageBox.Show("oof occured");
+                    lengthLabel.Text = "Length: ?";
+                    fileSizeLabel.Text = "File Size: ?    An error has occurred.";
+                    riffChunkSizeInput.Text = "?";
+                    dataChunkSizeInput.Text = "?";
+                    blockAlignInput.Text = "?";
+                    byteRateInput.Text = "?";
+                    return;
                 }
             }
             estimateStuff();
@@ -191,6 +197,16 @@ namespace WAVFileCreator
         public int getSampleRate()
         {
             return int.Parse(ReverseEndianness(sampleRateInput.Text), System.Globalization.NumberStyles.HexNumber);
+        }
+
+        public int getBitsPerSample()
+        {
+            return int.Parse(ReverseEndianness(bitsInput.Text), System.Globalization.NumberStyles.HexNumber);
+        }
+
+        public int getChannels()
+        {
+            return int.Parse(ReverseEndianness(channelsInput.Text), System.Globalization.NumberStyles.HexNumber);
         }
 
         public static byte[] StringToByteArray(string hex)
