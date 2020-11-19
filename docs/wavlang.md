@@ -8,3 +8,6 @@ The `mul` macro is the most simple macro. It's formatted as `[mul,<hex>,<count>]
 
 ## `sin` Macro
 The `sin` macro is used to generate a sin wave at a given frequency for a given duration. It's formatted as `[sin, <freq or note>, <duration>]`. You can pass it either a frequency in Hz or a note name such as `A4`, and the duration is measured in seconds.
+
+## `sqr` Macro
+The `sqr` macro is used to generate a square wave at a given frequency for a given duration. It's formatted as `[sqr, <freq or note>, <duration>]`. You can pass it either a frequency in Hz or a note name such as `A4`, and the duration is measured in seconds.

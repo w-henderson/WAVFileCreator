@@ -36,7 +36,7 @@ namespace WAVFileCreator
                             throw new Exception("Syntax error in Wavlang: mul function was supplied with invalid parameters.");
                         }
                     }
-                    else if (commands[0] == "sin")
+                    else if (commands[0] == "sin" || commands[0] == "sqr")
                     {
                         if (notes.ContainsKey(commands[1].ToUpper()))
                         {
@@ -56,10 +56,34 @@ namespace WAVFileCreator
                                 {
                                     if (bitsPerSample == 8)
                                     {
-                                        sinOut += ((int)Math.Round((sinValue + 1) * 127)).ToString("X2");
+                                        if (commands[0] == "sin")
+                                        {
+                                            sinOut += ((int)Math.Round((sinValue + 1) * 127)).ToString("X2");
+                                        } else
+                                        {
+                                            if (sinValue > 0)
+                                            {
+                                                sinOut += "ff";
+                                            } else
+                                            {
+                                                sinOut += "00";
+                                            }
+                                        }
                                     } else if (bitsPerSample == 16)
                                     {
-                                        sinOut += ((short)Math.Round(sinValue * 32767)).ToString("X4");
+                                        if (commands[0] == "sin")
+                                        {
+                                            sinOut += MainForm.ReverseEndianness(((short)Math.Round(sinValue * 32767)).ToString("X4"));
+                                        } else
+                                        {
+                                            if (sinValue > 0)
+                                            {
+                                                sinOut += "ff7f";
+                                            } else
+                                            {
+                                                sinOut += "0180";
+                                            }
+                                        }
                                     } else
                                     {
                                         throw new Exception("Unknown bits per sample, please choose 8 or 16.");
@@ -70,7 +94,7 @@ namespace WAVFileCreator
                         }
                         else
                         {
-                            throw new Exception("Syntax error in Wavlang: sin function was supplied with invalid parameters.");
+                            throw new Exception("Syntax error in Wavlang: "+commands[0]+" function was supplied with invalid parameters.");
                         }
                     }
                     else
